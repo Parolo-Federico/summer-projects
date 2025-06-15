@@ -264,4 +264,56 @@ class Solution {
             return 1/pow;
         }
     }
+
+    /*83. Remove Duplicates from Sorted List*/
+    public ListNode deleteDuplicates(ListNode head) {
+        ListNode nHead;
+        ListNode last;
+        if(head == null){
+            return null;
+        }else{
+            nHead = new ListNode(head.val);
+            last = nHead;
+        }
+        while(head != null){
+            if(head.val != last.val){
+                nHead = addNode(nHead, head.val);
+                last = last.next;
+            }
+            head = head.next;
+        }
+        return nHead;
+    }
+    public ListNode addNode(ListNode node, int val){
+        ListNode n = node;
+        while(node.next != null){
+            node = node.next;
+        }
+        node.next = new ListNode(val);
+        return n;
+    }
+    /*88. Merge Sorted Array*/
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        int[] nums1C = nums1.clone();
+        while(i < m && j < n){
+            if(nums1C[i] <= nums2[j]){
+                nums1[k++] = nums1C[i++];
+            }else{
+                nums1[k++] = nums2[j++];
+            }
+
+        }
+        if(i >= m){
+            while(j < n){
+                nums1[k++] = nums2[j++];
+            }
+        }else{
+            while(i < m){
+                nums1[k++] = nums1C[i++];
+            }
+        }
+    }
 }
