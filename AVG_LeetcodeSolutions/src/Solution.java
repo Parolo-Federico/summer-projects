@@ -1,5 +1,5 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
 
 class Solution {
     /*21. Merge Two Sorted Lists*/
@@ -423,5 +423,264 @@ class Solution {
             }
         }
         return l;
+    }
+    /*136. Single Number*/
+    public int singleNumber(int[] nums) {
+        if(nums.length == 1){
+            return nums[0];
+        }
+        boolean b;
+        for (int i = 0; i < nums.length ; i++) {
+            b= false;
+            for (int j = 0; j < nums.length ; j++) {
+                if(nums[i] == nums[j] && i != j){
+                    b = true;
+                    break;
+                }
+            }
+            if(!b){
+                return nums[i];
+            }
+        }
+        return 0;
+    }
+    /*169. Majority Element*/
+    public int majorityElement(int[] nums) {
+        ArrayList<Integer> a = new ArrayList<>();
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            if(!a.contains(nums[i])){
+                a.add(nums[i]);
+                int c = 0;
+                for (int j = 0; j < n; j++) {
+                    if(nums[i] == nums[j]){
+                        c++;
+                    }
+                }
+                if (c > n /2) {
+                    return nums[i];
+                }
+            }
+
+        }
+        return 0;
+    }
+    /*171. Excel Sheet Column Number*/
+    public int titleToNumber(String columnTitle) {
+        Dictionary<String, Integer> d = new Hashtable<>();
+        int col = 0;
+        int len = columnTitle.length()-1;
+        for (int i = 65; i < 91; i++) {
+            d.put("" + (char)i, i-64);
+            int a = d.get("" + (char)i);
+            System.out.println(a);
+        }
+        for (int i = 0; i < columnTitle.length(); i++) {
+            col += d.get("" + columnTitle.charAt(len-i)) * (int)Math.pow(26,i);
+            System.out.println(d.get(columnTitle.charAt(len-i)));
+        }
+        return col;
+    }
+
+    /*172. Factorial Trailing Zeroes*/
+    public int trailingZeroes(int n) {
+        int count = 0;
+        int i = 5;
+        while( n / i >= 1){
+            count += n/i;
+            i *= 5;
+        }
+        return count;
+    }
+
+
+    /*187. Repeated DNA Sequences*/
+    public List<String> findRepeatedDnaSequences(String s) {
+        Set<String> seen = new HashSet<>();
+        Set<String> repeated = new HashSet<>();
+        int len = s.length();
+
+        for (int i = 0; i+10 <= len ; i++) {
+            if(!seen.add(s.substring(i,i+10))){
+                seen.add(s.substring(i,i+10));
+            }
+            int c = 0;
+            for (int j = i; j+10 <= len; j++) {
+                if(seen.contains(s.substring(j,j+10))){
+                    if(!repeated.add(s.substring(j,j+10))){
+                        repeated.add(s.substring(j,j+10));
+                    }
+                }
+            }
+        }
+        return new ArrayList<>(repeated);
+    }
+    /*188. Best Time to Buy and Sell Stock IV*/
+    public int maxProfit1(int k, int[] prices) {
+
+        int profit = 0;
+        for (int i = 0; i < prices.length-1 && k>0; i++) {
+            int[] ind = new int[2];
+            for (int j = 0; j < prices.length-1; j++) {
+                if(prices[ind[0]] - prices [ind[1]] < prices[j+1] - prices[j] && prices[j] != -1 ){
+                    ind[0] = j+1;
+                    ind[1] = j;
+                }
+            }
+            if(prices[ind[0]] - prices[ind[1]] == 0){
+                return profit;
+            }
+            profit += prices[ind[0]] - prices[ind[1]];
+            prices[ind[0]] = -1;
+        }
+        return profit;
+    }
+    public int maxProfit(int k, int[] prices) {
+        int profit = 0;
+        for (int i = prices.length-1; i > 0 && k>0; i--) {
+            int[] ind = new int[2];
+            for (int j = prices.length-1; j > 0 ; j--) {
+                if(prices[ind[0]] - prices[ind[1]] < prices[j] - prices[j-1] && prices[j-1] != -1){
+                    ind[0] = j;
+                    ind[1] = j-1;
+                }
+            }
+            if(prices[ind[0]] - prices[ind[1]] == 0){
+                return profit;
+            }
+            profit += prices[ind[0]] - prices[ind[1]];
+            prices[ind[0]] = -1;
+            k--;
+        }
+        return profit;
+    }
+    /*8. String to Integer (atoi)*/
+    public int myAtoi(String s) {
+        int i = 0;
+        long sum = 0;
+        boolean neg =false;
+        if(s.length() == 0){
+            return 0;
+        }
+        while (i < s.length() && s.charAt(i) == ' ') {
+            i++;
+        }
+        if (i < s.length() && s.charAt(i) == '-') {
+            neg = true;
+            i++;
+        }else if( i < s.length() && s.charAt(i) == '+'){
+            i++;
+        }
+        while (i < s.length() && s.charAt(i) == '0') {
+            i++;
+        }
+        int end = i;
+        while (end < s.length() && ("" + s.charAt(end)).matches("\\d")) {
+            end++;
+        }
+        if(end-i > 10){
+            return neg ? (int) -Math.pow(2,31) : (int) Math.pow(2,31);
+        }
+        if(end - i == 0){
+            return 0;
+        }
+        sum = (neg) ? -Long.parseLong(s.substring(i, end)) : Long.parseLong(s.substring(i, end));
+        System.out.println(sum);
+        if (sum > Math.pow(2, 31)-1) {
+            return (int) Math.pow(2, 31);
+        } else if (sum < (int) -Math.pow(2, 31)) {
+            return (int) -Math.pow(2, 31);
+        }
+
+        return (int) sum;
+
+    }
+    /*11. Container With Most Water*/
+    public int maxArea(int[] height) {
+        if(height.length == 2){
+            return Math.min(height[0],height[1]);
+        }
+        int max = 0;
+        int l = 0;
+        int r = height.length-1;
+        while(l < r){
+            if(max < Math.min(height[l],height[r]) * (r-l)){
+                max = Math.min(height[l],height[r]) * (r-l);
+            }
+            if(Math.max(height[l],height[r]) == height[r]){
+                l++;
+            }else{
+                r--;
+            }
+        }
+        return max;
+    }
+    /*17. Letter Combinations of a Phone Number*///TODO fix
+    public List<String> letterCombinations(String digits) {
+        HashMap<Character,String[]> h = new HashMap<>();
+        List<String> l = new ArrayList<>();
+        h.put('2', new String[]{"a", "b", "c"});
+        h.put('3', new String[]{"d", "e", "f"});
+        h.put('4', new String[]{"g", "h", "i"});
+        h.put('5', new String[]{"j", "k", "l"});
+        h.put('6', new String[]{"m", "n", "o"});
+        h.put('7', new String[]{"p", "q", "r","s"});
+        h.put('8', new String[]{"t", "u", "v"});
+        h.put('9', new String[]{"w", "x", "y","z"});
+        for (int i = 0; i < digits.length(); i++) {
+            dotP(h.get(digits.charAt(i)),h.get(digits.charAt(i+1)),l);
+        }
+        return l;
+    }
+    public void dotP(String[] a,String[] a1, List<String> list){
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a1.length; j++) {
+                list.add(a[i] + a1[j]);
+            }
+        }
+    }
+    /*22. Generate Parentheses*/
+    /*parentesi da usare ()
+    crea prima la struttura con tutte le parentesi inglobate
+         0 1 2 3 4 5
+    es 3 ( ( ( ) ) )
+    poi sposta la parentesi centrale di uno a destra
+    0 1 4 2 3 5
+    ( ( ) ( ) )
+    ripeti:
+    0 1 4 5 2 3
+    ( ( ) ) ( )
+    0 5 1 4 2 3
+    ( ) ( ) ( )
+
+    */
+    public List<String> generateParenthesis(int n) {
+        List<String> l = new ArrayList<>();
+        if(n == 0){
+            return l;
+        }
+        return null;
+    }
+
+    /*29. Divide Two Integers*/
+    public int divide(int dividend, int divisor) {
+        int q = 0;
+        boolean neg = false;
+        if(dividend < 0 ^ divisor < 0){
+            neg = true;
+        }
+        System.out.println(neg);
+        if(dividend == Integer.MAX_VALUE && divisor == -1){
+            return Integer.MIN_VALUE+1;
+        }else if(dividend == Integer.MIN_VALUE && divisor == -1){
+            return Integer.MAX_VALUE;
+        }
+        dividend = Math.abs(dividend);
+        divisor = Math.abs(divisor);
+        while(dividend - divisor >= 0){
+            dividend -= divisor;
+            q++;
+        }
+        return neg ? -q : q;
     }
 }
