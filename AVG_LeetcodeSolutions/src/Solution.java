@@ -1,5 +1,9 @@
+import java.math.BigInteger;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class Solution {
     /*21. Merge Two Sorted Lists*/
@@ -121,16 +125,16 @@ class Solution {
 
     /*66. Plus One*/
     public int[] plusOne(int[] digits) {
-        digits[digits.length - 1] += 1;
-        for (int i = digits.length - 1; i >= 0; i--) {
-            if (digits[i] == 10 && i > 0) {
-                digits[i - 1] += 1;
+        digits[digits.length-1] += 1;
+        for (int i = digits.length-1; i >= 0 ; i--) {
+            if(digits[i] == 10 && i > 0){
+                digits[i-1] += 1;
                 digits[i] = 0;
             }
         }
-        if (digits[0] == 0 || digits[0] == 10) {
+        if(digits[0] == 0 || digits[0] == 10){
             digits[0] = 0;
-            int[] digits1 = new int[digits.length + 1];
+            int[] digits1 = new int[digits.length+1];
             digits1[0] = 1;
             System.arraycopy(digits, 0, digits1, 1, digits1.length - 1);
             digits = digits1;
@@ -249,13 +253,26 @@ class Solution {
 
     /*50. Pow(x, n)*/
     public double myPow(double x, int n) {
-        double pow = x;
+
+        // x^n
+
         if (x == 0 || x == 1) {
             return x;
+        }
+        if(x == -1){
+            if (n % 2 == 0) {
+                return Math.abs(x);
+            } else {
+                return x;
+            }
         }
         if (n == 0) {
             return 1;
         }
+        if((n == Integer.MAX_VALUE || n == Integer.MIN_VALUE) && x != 1){
+            return 0;
+        }
+        double pow = x;
         if (n > 0) {
             for (int i = 1; i < n; i++) {
                 pow *= x;
@@ -473,11 +490,9 @@ class Solution {
         for (int i = 65; i < 91; i++) {
             d.put("" + (char)i, i-64);
             int a = d.get("" + (char)i);
-            System.out.println(a);
         }
         for (int i = 0; i < columnTitle.length(); i++) {
             col += d.get("" + columnTitle.charAt(len-i)) * (int)Math.pow(26,i);
-            System.out.println(d.get(columnTitle.charAt(len-i)));
         }
         return col;
     }
@@ -682,5 +697,189 @@ class Solution {
             q++;
         }
         return neg ? -q : q;
+    }
+    /*62. Unique Paths*/
+    public int uniquePaths(int m, int n) {
+        //(m+n-2)!/((n-1)!(m-1))!
+        if(m == 1 || n == 1){
+            return 1;
+        }
+        return (fact(m+n-2).divide(fact(n-1).multiply(fact(m-1)))).intValue();
+    }
+    public BigInteger fact(int n){
+        if(n == 0 || n == 1){
+            return new BigInteger("" + n);
+        }
+        return new BigInteger("" + n).multiply(fact(n-1));
+    }
+    /*70. Climbing Stairs*/
+    /*
+    possibilità: 1 or 2
+    non distinte per cui 1 + 2 e 2 + 1 sono coppie diverse
+    inizio da tutti 1 prima combinazione
+    poi un uno lo faccio diventare un 2
+    fattiriale della singhezza della sequenza
+    */
+    public int climbStairs(int n) {
+        return nThFib(n+1);
+    }
+    public int fib(int n, HashMap<Integer,Integer> map){
+        if(map.get(n) != null){
+            return map.get(n);
+        }
+        int f = fib(n-1,map) + fib(n-2,map);
+        map.put(n,f);
+        return f;
+    }
+    public int nThFib(int n){
+        if(n < 2){
+            return n;
+        }
+        HashMap<Integer,Integer> m = new HashMap<>();
+        m.put(0,0);
+        m.put(1,1);
+        return fib(n,m);
+    }
+    /*89. Gray Code*/
+    public List<Integer> grayCode(int n) {
+        List<Integer> rangeList = IntStream.range(0,(1 << n))
+                .boxed()
+                .collect(Collectors.toList());
+        int end = rangeList.size()-1;
+        for (int i = 1; i < n; i++) {
+            int start = (1 << i);
+            while(start < end){
+                flip(rangeList,start,start+(1 << i)-1);
+                start+=1 << i+1;
+
+            }
+            System.out.println(rangeList);
+        }
+        return rangeList;
+    }
+    public void flip(List<Integer> list, int start, int end){
+        for (int i = 0; i <= (end-start)/2; i++) {
+            Integer t = list.get(start+i);
+            list.set(start+i,list.get(end-i));
+            list.set(end-i,t);
+        }
+    }
+    /*public void flip(int[] a, int start, int end){
+        for (int i = 0; i < (end-start)/2; i++) {
+            int temp = a[start+i];
+            a[start+i] = a[end-i];
+            a[end-i] = temp;
+        }
+    }*/
+
+    /*150. Evaluate Reverse Polish Notation*/
+    // first accepted not best
+    public int evalRPN(String[] tokens) {
+        Stack<Integer> s = new Stack<>();
+        int a; int b;
+        for (int i = 0; i < tokens.length; i++) {
+            switch (tokens[i]){
+                case "+":
+                    s.push(s.pop() + s.pop());
+                    break;
+                case "-":
+                    a = s.pop();
+                    b = s.pop();
+                    s.push(b-a);
+                    break;
+                case "*":
+                    s.push(s.pop() * s.pop());
+                    break;
+                case "/":
+                    a = s.pop();
+                    b = s.pop();
+                    s.push(b/a);
+                    break;
+                default:
+                    s.push(Integer.parseInt(tokens[i]));
+            }
+        }
+        return s.pop();
+    }
+    // more efficent
+    public int evalRPN1(String[] tokens) {
+        List<Integer> s = new ArrayList<>();
+        for (int i = 0; i < tokens.length; i++) {
+            switch (tokens[i]){
+                case "+":
+                    int a = pop(s);
+                    int b = pop(s);
+                    push(s,a+b);
+                    break;
+                case "-":
+                    a = pop(s);
+                    b = pop(s);
+                    push(s,b-a);
+                    break;
+                case "*":
+                    a = pop(s);
+                    b = pop(s);
+                    push(s,a*b);
+                    break;
+                case "/":
+                    a = pop(s);
+                    b = pop(s);
+                    push(s,b/a);
+                    break;
+                default:
+                    push(s,Integer.parseInt(tokens[i]));
+            }
+        }
+        return pop(s);
+    }
+    public void push(List<Integer> l, int a){
+        l.add(a);
+    }
+    public int pop(List<Integer> l){
+        return l.remove(l.size()-1);
+    }
+    /*166. Fraction to Recurring Decimal*/
+    public String fractionToDecimal(int numerator, int denominator) {
+        if (numerator == 0){
+            return "0";
+        }
+        if(numerator % denominator == 0){
+            return "" + numerator/denominator;
+        }
+        int n = numerator;
+
+        while(n/5 > 0){
+            n /= 5;
+        }
+        while(n/2 > 0){
+            n /= 2;
+        }
+        if(n == 0){
+            return "" +(double)numerator/denominator;
+        }
+        List<Integer> remainers = new ArrayList<>();
+        n = numerator/denominator;
+        int resto = numerator % denominator;
+        String period = "";
+        int q = (resto * 10) / denominator;
+        remainers.add(q);
+        while (!remainers.contains(q)){
+            q = (resto * 10) / denominator;
+            resto = resto*10 % denominator;
+            remainers.add(q);
+        }
+        for (int i = 0; i < remainers.size(); i++) {
+            period += remainers.get(i);
+        }
+        return "" + n + ".(" + period + ")" ;
+    }
+    /*168. Excel Sheet Column Title*/
+    public String convertToTitle(int columnNumber) {
+        String s = "";
+        while(columnNumber / 26 >= 1){
+             s = (char)((columnNumber % 26) + 64) + s;
+             columnNumber /= 26;
+        }
+        return ((char)(columnNumber + 64) + s);
     }
 }
