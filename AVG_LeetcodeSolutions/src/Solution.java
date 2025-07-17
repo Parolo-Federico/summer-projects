@@ -876,10 +876,56 @@ class Solution {
     /*168. Excel Sheet Column Title*/
     public String convertToTitle(int columnNumber) {
         String s = "";
-        while(columnNumber / 26 >= 1){
-             s = (char)((columnNumber % 26) + 64) + s;
+        while(columnNumber / 27 >= 1){
+            int rem = columnNumber % 26 == 0 ? 26 : columnNumber % 26;
+             s = (char)(rem + 64) + s;
              columnNumber /= 26;
+             if(rem == 26){
+                 columnNumber--;
+             }
         }
         return ((char)(columnNumber + 64) + s);
+    }
+    // slightly better
+    public String convertToTitle1(int columnNumber) {
+        String s = "";
+        while(columnNumber > 0){
+            columnNumber--;
+            s = (char)((columnNumber % 26) + 'A') + s;
+            columnNumber /= 26;
+        }
+        return s;
+    }
+    /*189. Rotate Array*/
+    public void rotate(int[] nums, int k) {
+        if(k % nums.length == 0){
+            return;
+        }
+        k = (k % nums.length)+1;
+        int t = nums[k];
+        int l = nums.length;
+        int i = k;
+        while(i % l != 0){
+            nums[(i % l)] = nums[((i+k) % l)];
+            i+= k;
+        }
+        nums[0] = t;
+    }
+    public void rotate1(int[] nums, int k) {
+        if(k % nums.length == 0){
+            return;
+        }
+        for (int i = 0; i < k; i++) {
+            oneRight(nums);
+        }
+    }
+    // funziona ma non e veloce
+    public void oneRight(int[] nums){
+        int count = 0;
+        int temp = nums[nums.length-1];
+        for (int i = nums.length-1; i > 0 ; i--) {
+            nums[i] = nums[i-1];
+        }
+        nums[0] = temp;
     }
 }

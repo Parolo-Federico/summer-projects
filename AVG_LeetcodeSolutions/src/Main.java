@@ -1,8 +1,9 @@
 public class Main {
     public static void main(String[] args) {
         Solution s = new Solution();
-        System.out.println(s.titleToNumber("ZZA"));
-        System.out.println(s.convertToTitle(52));
+        int[] a = {1,2,3,4,5,6,7};
+        s.rotate(a,3);
+        print(a);
     }
     public static void print(int[] o){
         for (int i = 0; i < o.length; i++) {
