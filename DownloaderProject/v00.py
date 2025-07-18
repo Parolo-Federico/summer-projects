@@ -1,13 +1,13 @@
 import tkinter as tk
-from tkinter import ttk
 import threading
-from tkinter.messagebox import showinfo
 from tkinter import filedialog
 from ctypes import windll
 import yt_dlp
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
-import queue
+from PIL import Image, ImageTk
+import requests
+from io import BytesIO
 import re
 
 class App(ctk.CTk):
@@ -81,6 +81,7 @@ class App(ctk.CTk):
 
         #download in progress window (DIP)
         self.DIPwindow = None
+        self.confirm_window = None
 
     # onEnter and onLeave for buttons TODO fix
     def on_enter(event):
@@ -98,7 +99,6 @@ class App(ctk.CTk):
             self.folderPathArea.configure(state='disabled')
     
     def clear_folder(self):
-        self.open_download_window()
         self.folderPathArea.configure(state='normal')
         self.folderPathArea.delete('0.0','end')
         self.folderPathArea.configure(state='disabled')
@@ -117,10 +117,34 @@ class App(ctk.CTk):
             self.urlFrame.urlEntry.delete(0,'end')
 
         else:
-            self.start_download(self.urlFrame.urlEntry.get())
+            url = self.urlFrame.urlEntry.get()
+            global info
+            info = self.get_video_info(url=url)
+            self.show_confirm_window()
+            #self.start_download(self.urlFrame.urlEntry.get())
+
+
+    def get_video_info(self,url):
+        ydl_opts = {'quiet': True, 'skip_download': True}
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            return ydl.extract_info(url, download=False)
+        
+    def show_confirm_window(self):
+        if self.confirm_window == None or not self.confirm_window.winfo_exists():
+            self.confirm_window = ConfirmWindow(self)
+            self.confirm_window.attributes('-topmost',1)
+            self.confirm_window.focus()
+        else:
+            self.confirm_window.focus()
+        
+
+
 
     def show_error_messageBox(self,msg):
         CTkMessagebox(title='Error',message=msg,icon='cancel',option_1='OK').focus()
+    
+    def show_download_end(self):
+        CTkMessagebox(title='Done',message='Download Finished, find the media in the specified folder.',icon='check',option_1='Close').focus()
 
     # Hook per aggiornare i progressi
     
@@ -134,16 +158,20 @@ class App(ctk.CTk):
             label_text = f"[download] {percent} of {size} at {speed} ETA {eta}"
 
             # Aggiorna i Label in modo thread-safe TODO
-            self.DIPwindow.progressFrame.percentLabel.configure(text='State: '+percent)
-            self.DIPwindow.progressFrame.fileSizeLabel.configure(text='Size:'+size)
-            self.DIPwindow.progressFrame.speedLabel.configure(text='Speed: '+speed)
-            self.DIPwindow.progressFrame.ETALabel.configure(text='ETA: '+eta)
+            print('.'+percent+'.')
+            self.DIPwindow.progressFrame.percentLabel.configure(text=f'State: {percent}')
+            self.DIPwindow.progressFrame.fileSizeLabel.configure(text=f'Size:{size}')
+            self.DIPwindow.progressFrame.speedLabel.configure(text=f'Speed: {speed}')
+            self.DIPwindow.progressFrame.ETALabel.configure(text=f'ETA: {eta}')
         elif d['status'] == 'finished':
             self.DIPwindow.label.configure(text='Download completato!')
             self.DIPwindow.destroy()
+            self.show_download_end()
 
 
-    def start_download(self,url):
+    def start_download(self):
+        self.confirm_window.destroy()
+        url = self.urlFrame.urlEntry.get()
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': self.folder + '/%(title)s.%(ext)s',
@@ -183,7 +211,7 @@ class App(ctk.CTk):
     
     def open_download_window(self):
         if self.DIPwindow == None or not self.DIPwindow.winfo_exists():
-            self.DIPwindow = ToplevelWindow(self)
+            self.DIPwindow = DownloadWindow(self)
             self.DIPwindow.attributes('-topmost',1)
         else:
             self.DIPwindow.focus()
@@ -191,7 +219,7 @@ class App(ctk.CTk):
 
 
 
-class ToplevelWindow(ctk.CTkToplevel):
+class DownloadWindow(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         screenW = self.winfo_screenwidth()
@@ -201,6 +229,7 @@ class ToplevelWindow(ctk.CTkToplevel):
         self.geometry(f"500x100+{centerX}+{centerY}")
         self.title('Download in progress')
         font = ('Helvetica',16)
+        self.resizable(False,False)
         self.label = ctk.CTkLabel(self, text="Download:",font=font)
         self.label.pack(padx=20, pady=20)
         self.progressFrame = ctk.CTkFrame(self,fg_color='transparent')
@@ -214,23 +243,63 @@ class ToplevelWindow(ctk.CTkToplevel):
         self.progressFrame.ETALabel = ctk.CTkLabel(self.progressFrame,text='',font=font)
         self.progressFrame.ETALabel.pack(side='left',padx=10)
         
+class ConfirmWindow(ctk.CTkToplevel):
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        screenW = self.winfo_screenwidth()
+        screenH = self.winfo_screenheight()
+        centerX = int(screenW/2 -200)
+        centerY = int(screenH/2 - 185)
+        self.geometry(f"400x370+{centerX}+{centerY}")
+        self.title('Confirmation')
+        font = ('Helvetica',16)
+        self.resizable(False,False)
+        global info
+        img_data = requests.get(info['thumbnail']).content
+        img_pil = Image.open(BytesIO(img_data))
+        img_ctk = ctk.CTkImage(light_image=img_pil, size=(320,180))
+
+         # Mostra copertina
+        self.thumb = ctk.CTkLabel(self, image=img_ctk, text="")
+        self.thumb.pack(pady=5)
+
+        # Mostra dettagli
+        self.title = ctk.CTkLabel(self, text=info['title'], font=font)
+        self.title.pack()
+
+        duration = info['duration']
+        min = int(duration/60)
+        self.duration = ctk.CTkLabel(self, text=f"Duration: s",font=font)
+        if(min > 0):
+            self.duration.configure(text=f'Duration: {min}min {duration % 60}s')
+        else:
+            self.duration.configure(text=f'Duration: {duration}s')
+        self.duration.pack(pady=5)
+
+        self.uploader = ctk.CTkLabel(self, text=f"Channel: {info['uploader']}",font=font)
+        self.uploader.pack(pady=5)
+
+        # Bottone conferma
+        self.confirm = ctk.CTkButton(self, text='Confirm',font=('Helvetica',16), command=app.start_download)
+        self.confirm.pack(pady=5)
+
        
 class MyLogger():
     def debug(self, msg):
         #pass
-        print(msg)
+        print('debug ' + msg)
 
     def warning(self, msg):
         #pass
-        print(msg)
+        print('warning ' + msg)
 
     def error(self, msg):
         #pass
-        print(msg)
+        print('error ' + msg)
 
     def info(self, msg):
         #pass
-        print(msg)
+        print('info ' + msg)
     
 
 
