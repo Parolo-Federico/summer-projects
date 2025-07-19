@@ -260,7 +260,7 @@ class ConfirmWindow(ctk.CTkToplevel):
         img_ctk = ctk.CTkImage(light_image=img_pil, size=(320,180))
 
          # Mostra copertina
-        self.thumb = ctk.CTkLabel(self, image=img_ctk, text="")
+        self.thumb = ctk.CTkLabel(self, image=img_ctk, text="",corner_radius=5,)
         self.thumb.pack(pady=5)
 
         # Mostra dettagli
