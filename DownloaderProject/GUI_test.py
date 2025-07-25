@@ -31,7 +31,7 @@ def clear_folder():
 
 root =tk.Tk()
 root.title('Video/Audio Downloader')
-root.iconbitmap("./assets/icona.ico")
+#root.iconbitmap("./assets/icona.ico")
 root.geometry('600x400+100+100')
 root.resizable(False,False)
 root.rowconfigure(0,weight=1)

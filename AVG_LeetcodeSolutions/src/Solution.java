@@ -928,4 +928,29 @@ class Solution {
         }
         nums[0] = temp;
     }
+
+    /*3487. Maximum Unique Subarray Sum After Deletion*/
+    public int maxSum(int[] nums) {
+        if(nums.length == 1){
+            return nums[0];
+        }
+        int sum = 0;int max = nums[0];
+        List<Integer> pos = new ArrayList<>();
+        pos.add(0);
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > 0 && !pos.contains(nums[i])){
+                pos.add(nums[i]);
+            }
+            max = max < nums[i] ? nums[i] : max;
+        }
+        if(pos.size() == 0){
+            return max;
+        }else{
+            max = 0;
+            for (int i = 0; i < pos.size(); i++) {
+                max+= pos.get(i);
+            }
+        }
+        return max;
+    }
 }

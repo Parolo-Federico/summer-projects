@@ -1,0 +1,91 @@
+BoxLayout:
+    orientation: "vertical"
+    padding: 20
+    spacing: 15
+
+    Label:
+        text: "Insert the URL:"
+        font_size: 16
+        color: 1, 1, 1, 1
+        size_hint_y: None
+        height: 30
+        halign: "left"
+        valign: "middle"
+        text_size: self.size
+
+    TextInput:
+        hint_text: "https://youtube.com/..."
+        size_hint_y: None
+        height: 40
+        background_color: 0.2, 0.2, 0.2, 1
+        foreground_color: 1, 1, 1, 1
+        hint_text_color: 0.6, 0.6, 0.6, 1
+        cursor_color: 1, 1, 1, 1
+
+    BoxLayout:
+        size_hint_y: None
+        height: 45
+        spacing: 15
+
+        Button:
+            text: "Select Folder"
+            background_color: 0.2, 0.5, 0.9, 1
+            color: 1, 1, 1, 1
+            bold: True
+            background_normal: ""
+
+        Button:
+            text: "Clear folder selection"
+            background_color: 0.2, 0.5, 0.9, 1
+            color: 1, 1, 1, 1
+            bold: True
+            background_normal: ""
+
+    Label:
+        size_hint_y: None
+        height: 40
+        canvas.before:
+            Color:
+                rgba: 0.1, 0.1, 0.1, 1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [10]
+
+    Label:
+        text: "File Format:"
+        font_size: 15
+        color: 1, 1, 1, 1
+        size_hint_y: None
+        height: 30
+
+    BoxLayout:
+        size_hint_y: None
+        height: 40
+        spacing: 20
+
+        ToggleButton:
+            text: "MP3 (audio only)"
+            group: "format"
+            state: "down"
+            background_color: 0.2, 0.2, 0.2, 1
+            color: 1, 1, 1, 1
+            background_normal: ""
+
+        ToggleButton:
+            text: "MP4 (video & audio)"
+            group: "format"
+            background_color: 0.2, 0.2, 0.2, 1
+            color: 1, 1, 1, 1
+            background_normal: ""
+
+    Widget:
+
+    Button:
+        text: "Download"
+        size_hint_y: None
+        height: 45
+        background_color: 0.2, 0.5, 0.9, 1
+        color: 1, 1, 1, 1
+        bold: True
+        background_normal: ""
