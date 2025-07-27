@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.Map;
 
 class Solution {
     /*21. Merge Two Sorted Lists*/
@@ -952,5 +953,44 @@ class Solution {
             }
         }
         return max;
+    }
+    /*191. Number of 1 Bits*/
+    public int hammingWeight(int n) {
+        return Integer.bitCount(n);
+    }
+
+    /*202. Happy Number*/
+    public boolean isHappy(int n) {
+        for (int i = 0; i < 10; i++) {
+            if(n == 1){
+                return true;
+            }
+            n = powerOfDigit(n);
+        }
+        return false;
+    }
+
+    public int powerOfDigit(int n){
+        String str = "" + n;
+        n=0;
+        for (int i = 0; i < str.length(); i++) {
+            n += Math.pow(str.charAt(i) - 48,2);
+        }
+        return n;
+    }
+
+    /*205. Isomorphic Strings*/
+    public boolean isIsomorphic(String s, String t) {
+        if(s.equals(t)){
+            return true;
+        }
+        HashMap<Character,Character> hs = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            if(hs.containsKey(s.charAt(i)) && hs.get(s.charAt(i)) != t.charAt(i) || hs.containsValue(t.charAt(i)) && hs.get){
+                return false;
+            }
+            hs.put(s.charAt(i),t.charAt(i));
+        }
+        return true;
     }
 }
