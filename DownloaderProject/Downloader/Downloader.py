@@ -334,7 +334,7 @@ class ActivationApp(ctk.CTk):
         font = ('Helvetica',16)
         self.resizable(False,False)
         ctk.CTkLabel(self, text="Insert product key:", font=font).pack(pady=10)
-        self.entry = ctk.CTkEntry(self, width=180,placeholder_text="XXXX-XXXX-XXXX")
+        self.entry = ctk.CTkEntry(self, width=180,placeholder_text="XXXX-XXXX-XXXX",font=font)
         self.entry.pack(pady=10,padx=20)
         self.status = ctk.CTkLabel(self, text="", text_color="red")
         self.status.pack()
@@ -343,26 +343,28 @@ class ActivationApp(ctk.CTk):
     def check_and_register_key(self):
     # Carica dati
         input_key = self.entry.get().strip()
+        encrypted_key = encrypt_data(input_key)
+        
         keys_status = load_json("keys_status.json")  # es. {"ABC123XYZ": "permanent", "XYZ789ABC": "single-use"}
         used_keys = load_json("used_keys.json")  # es. {"XYZ789ABC": True}
 
-        if input_key not in keys_status:
+        if encrypted_key not in keys_status:
             self.status.configure(text="Invalid Product Key")
             return False
         
-        status = keys_status[input_key]
+        status = keys_status[encrypted_key]
 
-        if status == "single-use" and input_key in used_keys:
+        if status == "single-use" and encrypted_key in used_keys:
             self.status.configure(text="Product key already used")
             return False,
         
         # Se arriva qui, key valida
-        # Registra la key come usata se single-use
-        if status == "single-use":
-            used_keys[input_key] = True
-            save_json("used_keys.json", used_keys)
+        # Registra la key come usata se single-use e se permanent
 
-        save_json("current_key.json", {"product_key": input_key, "status": status})
+        used_keys[encrypted_key] = "True"
+        save_json("used_keys.json", used_keys)
+
+        save_json("current_key.json", {"product_key": encrypted_key, "status": status})
         self.destroy()
         app=App()
         app.mainloop()
@@ -380,11 +382,16 @@ def load_json(filename):
 def save_json(filename, data):
     file = BASE_DIR/'license'/filename
     with open(file, "w", encoding="utf-8") as f:
-        json.dumps(data, indent=4)
+        json.dump(data,f, indent=4)
 
     
 def check_activation():
     current_key = load_json('current_key.json')
+    keys_status = load_json('keys_status.json')
+
+    if current_key["product_key"] not in keys_status:
+        return False
+    
     return current_key["status"]
 
 def encrypt_data(data: str) -> str:
@@ -405,7 +412,8 @@ def decrypt_data(encoded: str) -> str:
 if __name__ == "__main__":
     windll.shcore.SetProcessDpiAwareness(1)
     app = App()
-    if check_activation() and check_activation() != "single-use" or check_activation() == 'permanent':
+    active = check_activation()
+    if active and active != "single-use" or active == 'permanent':
         app.mainloop()
     else:
         activation_app = ActivationApp()
