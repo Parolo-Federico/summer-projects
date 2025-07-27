@@ -20,6 +20,8 @@ SECRET_KEY = "q3X2mB#eRt@P9u"
 #ACTIVATION_FILE = "activation.json"
 BASE_DIR = Path(__file__).resolve().parent
 
+auth = False
+
 class App(ctk.CTk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -258,8 +260,8 @@ class ConfirmWindow(ctk.CTkToplevel):
         screenW = self.winfo_screenwidth()
         screenH = self.winfo_screenheight()
         centerX = int(screenW/2 -200)
-        centerY = int(screenH/2 - 185)
-        self.geometry(f"400x370+{centerX}+{centerY}")
+        centerY = int(screenH/2 - 200)
+        self.geometry(f"400x400+{centerX}+{centerY}")
         self.title('Confirmation')
         font = ('Helvetica',16)
         self.resizable(False,False)
@@ -269,7 +271,7 @@ class ConfirmWindow(ctk.CTkToplevel):
         img_ctk = ctk.CTkImage(light_image=img_pil, size=(320,180))
 
          # Mostra copertina
-        self.thumb = ctk.CTkLabel(self, image=img_ctk, text="",corner_radius=20,)
+        self.thumb = ctk.CTkLabel(self, image=img_ctk, text="",corner_radius=20)
         self.thumb.pack(pady=5)
 
         # Mostra dettagli
@@ -356,7 +358,7 @@ class ActivationApp(ctk.CTk):
 
         if status == "single-use" and encrypted_key in used_keys:
             self.status.configure(text="Product key already used")
-            return False,
+            return False
         
         # Se arriva qui, key valida
         # Registra la key come usata se single-use e se permanent
@@ -366,7 +368,9 @@ class ActivationApp(ctk.CTk):
 
         save_json("current_key.json", {"product_key": encrypted_key, "status": status})
         self.destroy()
-        app=App()
+        global auth
+        auth = True
+        global app
         app.mainloop()
 
 # returns content of a json file, returns {} if file does not exist
@@ -409,15 +413,17 @@ def decrypt_data(encoded: str) -> str:
         return ""
 
 
-if __name__ == "__main__":
-    windll.shcore.SetProcessDpiAwareness(1)
-    app = App()
-    active = check_activation()
-    if active and active != "single-use" or active == 'permanent':
-        app.mainloop()
-    else:
-        activation_app = ActivationApp()
-        activation_app.attributes("-topmost",1)
-        activation_app.focus()
-        activation_app.mainloop()
+
+windll.shcore.SetProcessDpiAwareness(1)
+app = App()
+active = check_activation()
+if active and active != "single-use" or active == 'permanent':
+    app.mainloop()
+else:
+    activation_app = ActivationApp()
+    activation_app.attributes("-topmost",1)
+    activation_app.focus()
+    activation_app.mainloop()
+
+            
 
