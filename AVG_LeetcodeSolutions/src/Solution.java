@@ -986,11 +986,89 @@ class Solution {
         }
         HashMap<Character,Character> hs = new HashMap<>();
         for (int i = 0; i < s.length(); i++) {
-            if(hs.containsKey(s.charAt(i)) && hs.get(s.charAt(i)) != t.charAt(i) || hs.containsValue(t.charAt(i)) && hs.get){
-                return false;
-            }
+//            if(hs.containsKey(s.charAt(i)) && hs.get(s.charAt(i)) != t.charAt(i) || hs.containsValue(t.charAt(i)) && hs.get()){
+//                return false;
+//            }
             hs.put(s.charAt(i),t.charAt(i));
         }
         return true;
     }
+    /*34. Find First and Last Position of Element in Sorted Array*/
+    public int[] searchRange(int[] nums, int target) {
+        int l = nums.length;
+        if (l == 0){
+            return new int[] {-1,-1};
+        }else if(l == 1 && nums[0] == target){
+            return new int[] {0,0};
+        }else if(nums[0] == nums[l-1] && nums[0] == target){
+            return new int[] {0,l-1};
+        }
+        int pos = binSearch(nums,target,0,l-1);
+        if(pos == -1){
+            return new int[] {-1,-1};
+        }
+        int start = pos;
+        int end = pos;
+        while (start >=0 && nums[start] == target){
+            start--;
+        }
+        while (end < l && nums[end] == target){
+            end++;
+        }
+
+        return new int[] {++start,--end};
+    }
+
+    public int binSearch(int[] a, int key,int start,int end){
+        int mid = (end+start) / 2;
+        if (start > end){
+            return -1;
+        }
+        if(a[mid] == key){
+            return mid;
+        }else if(a[mid] < key){
+            return binSearch(a,key,mid+1,end);
+        }else{
+            return binSearch(a,key,start,mid-1);
+        }
+    }
+    /*38. Count and Say*/
+    public String countAndSay(int n) {
+        if (n == 1){
+            return "1";
+        }
+        String str = "1";
+        for (int i = 0; i < n-1; i++) {
+            String res = "";
+            for (int j = 0; j < str.length(); j++) {
+                 char c = str.charAt(j);
+                 int count = 1;
+                 while(j + count < str.length() &&  c == str.charAt(j + count)){
+                     count++;
+                 }
+                 res +=  "" + count + c;
+                 j+= count-1;
+            }
+            str = res;
+        }
+        return str;
+    }
+
+    public String countAndSay2(int n){
+        if (n == 1){
+            return "1";
+        }
+        String str = "1";
+        int i = 0;
+        while(i < str.length()){
+            String res = "";
+            char c = str.charAt(i);
+            int appearence = 1;
+            while (i + appearence < str.length() && c == str.charAt(i + appearence)){
+                appearence++;
+            }
+        }
+    return null;
+    }
+
 }

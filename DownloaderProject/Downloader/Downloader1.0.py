@@ -122,8 +122,8 @@ class App(ctk.CTk):
 
         elif self.urlFrame.urlEntry.get() == '':
             self.show_error_messageBox('Insert media URL before downloading.')
-
-        elif re.search('^https://(www\.youtube\.com|youtu\.be)/.*',self.urlFrame.urlEntry.get()) == None :
+        # https://youtube.com/playlist?list=PLIrNlQjgm2z_gLWDZPdHr1DuaUwK0H7tt&si=9UUg3d8G8MT2Jc5p
+        elif re.search('^https://(www\.youtube\.com|youtu\.be|youtube\.com)/.*',self.urlFrame.urlEntry.get()) == None :
             self.show_error_messageBox('Insert a valid youtube URL')
             self.urlFrame.urlEntry.delete(0,'end')
 
@@ -132,7 +132,7 @@ class App(ctk.CTk):
             global info
             info = self.get_video_info(url=url)
             self.show_confirm_window()
-            #self.start_download(self.urlFrame.urlEntry.get())
+            #self.start_download()
 
 
     def get_video_info(self,url):
@@ -181,7 +181,9 @@ class App(ctk.CTk):
 
 
     def start_download(self):
-        self.confirm_window.destroy()
+        if self.confirm_window.winfo_exists:
+            self.confirm_window.destroy()
+
         url = self.urlFrame.urlEntry.get()
         ydl_opts = {
             'format': 'bestaudio/best',

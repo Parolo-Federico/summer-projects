@@ -1,5 +1,5 @@
-([('Downloader1.0.exe',
-   'C:\\Users\\parol\\OneDrive\\Documenti\\Informatica_3ID\\summer-projects\\DownloaderProject\\Downloader\\build\\Downloader1.0\\Downloader1.0.exe',
+([('App_v1.2.exe',
+   'C:\\Users\\parol\\OneDrive\\Documenti\\Informatica_3ID\\summer-projects\\DownloaderProject\\Downloader\\build\\Downloader1.0\\App_v1.2.exe',
    'EXECUTABLE'),
   ('python313.dll',
    'C:\\Users\\parol\\AppData\\Local\\Programs\\Python\\Python313\\python313.dll',
