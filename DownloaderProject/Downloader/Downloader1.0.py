@@ -15,12 +15,33 @@ import re
 import json
 from pathlib import Path
 import base64
+import os
+import sys
 
 SECRET_KEY = "q3X2mB#eRt@P9u"
 #ACTIVATION_FILE = "activation.json"
 BASE_DIR = Path(__file__).resolve().parent
-
 auth = False
+
+def get_ffmpeg_path():
+    if getattr(sys, 'frozen', False):
+        # Se eseguito da .exe compilato
+        base_path = os.path.dirname(sys.executable)
+    else:
+        # Se eseguito da .py
+        base_path = os.path.dirname(os.path.abspath(__file__))
+
+    return os.path.join(base_path, 'ffmpeg','')
+
+ffmpeg_path = get_ffmpeg_path()
+os.environ['FFMPEG_LOCATION'] = ffmpeg_path
+# debut to find right path
+#print(ffmpeg_path)
+#print(os.path.exists(ffmpeg_path))
+#print("[DEBUG] ffmpeg path:", os.path.join(ffmpeg_path, 'ffmpeg.exe'))
+#print("[DEBUG] ffprobe path:", os.path.join(ffmpeg_path, 'ffprobe.exe'))
+#print("[DEBUG] ffmpeg exists:", os.path.exists(os.path.join(ffmpeg_path, 'ffmpeg.exe')))
+#print("[DEBUG] ffprobe exists:", os.path.exists(os.path.join(ffmpeg_path, 'ffprobe.exe')))
 
 class App(ctk.CTk):
     def __init__(self, *args, **kwargs):
@@ -86,7 +107,7 @@ class App(ctk.CTk):
         self.formatFrame.mp4Button = ctk.CTkRadioButton(self.formatFrame,text='MP4 (video & audio)',variable=self.fileFormatVar,value='opt2',font=font)
         self.formatFrame.mp4Button.pack(side='left',padx=10)
         
-        # download button TODO command
+        # download button
         self.downloadButton = ctk.CTkButton(self,text='Download',corner_radius=20,font=font,command=self.check_and_download)
         self.downloadButton.place(relx=0.5,rely=0.85,anchor='center')
 
@@ -157,6 +178,9 @@ class App(ctk.CTk):
     def show_download_end(self):
         CTkMessagebox(title='Done',message='Download Finished, find the media in the specified folder.',icon='check',option_1='Close').focus()
 
+    def show_merging_start(self):
+        CTkMessagebox(title='postprocessing',message='*Video only: merging formats and converting to .mp4',option_1='Close').focus()
+
     # Hook per aggiornare i progressi
     
     def progress_hook(self,d):
@@ -165,19 +189,16 @@ class App(ctk.CTk):
             speed = d.get('_speed_str', '').strip()
             eta = d.get('_eta_str', '').strip()
             size = d.get('_total_bytes_str', '') or d.get('total_bytes', '')
+            if self.DIPwindow.winfo_exists:
+                self.DIPwindow.progressFrame.percentLabel.configure(text=f'State: {percent}')
+                self.DIPwindow.progressFrame.fileSizeLabel.configure(text=f'Size:{size}')
+                self.DIPwindow.progressFrame.speedLabel.configure(text=f'Speed: {speed}')
+                self.DIPwindow.progressFrame.ETALabel.configure(text=f'ETA: {eta}')
             
-            #label_text = f"[download] {percent} of {size} at {speed} ETA {eta}"
-
-            # Aggiorna i Label in modo thread-safe TODO
-            print('.'+percent+'.')
-            self.DIPwindow.progressFrame.percentLabel.configure(text=f'State: {percent}')
-            self.DIPwindow.progressFrame.fileSizeLabel.configure(text=f'Size:{size}')
-            self.DIPwindow.progressFrame.speedLabel.configure(text=f'Speed: {speed}')
-            self.DIPwindow.progressFrame.ETALabel.configure(text=f'ETA: {eta}')
         elif d['status'] == 'finished':
-            self.DIPwindow.label.configure(text='Download completato!')
-            self.DIPwindow.destroy()
+            #self.DIPwindow.destroy()
             self.show_download_end()
+            #self.show_merging_start()
 
 
     def start_download(self):
@@ -213,9 +234,11 @@ class App(ctk.CTk):
             
             if self.fileFormatVar.get() == 'opt2':
                 with yt_dlp.YoutubeDL(ydl_optsVideo) as ydl:
+                    #ydl.params.update(ydl_optsVideo)
                     ydl.download([url])
             elif self.fileFormatVar.get() == 'opt1':
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    #ydl.params.update(ydl_opts)
                     ydl.download([url])
             else:
                 print('errore impossibile')

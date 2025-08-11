@@ -2,5 +2,6 @@
     "B1IrRQo=": "permanent", "vaswg": "permanent",
     "IwU=": "single-use", "R6": "single-use",
     "Alo2VQEnZwAkIC87XBs=": "single-use", "singleDevToken": "single-use",
-    "BVYrRg==": "permanent", "test": "permanent"
+    "BVYrRg==": "permanent", "test": "permanent",
+    "AkA3ZgIpRgs=": "single-use", "ssoToken": "singleuse"
 }

@@ -1,4 +1,4 @@
-('C:\\Users\\parol\\OneDrive\\Documenti\\Informatica_3ID\\summer-projects\\DownloaderProject\\Downloader\\build\\Downloader1.0\\App_v1.2.pkg',
+('C:\\Users\\parol\\OneDrive\\Documenti\\Informatica_3ID\\summer-projects\\DownloaderProject\\Downloader\\build\\Downloader1.0\\Downloader1.0.pkg',
  {'BINARY': True,
   'DATA': True,
   'EXECUTABLE': True,

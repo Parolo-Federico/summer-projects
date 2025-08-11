@@ -7,6 +7,12 @@ import java.util.stream.IntStream;
 import java.util.Map;
 
 class Solution {
+    public static void print(String[] o){
+        for (String j : o) {
+            System.out.print(j + " ");
+        }
+        System.out.println();
+    }
     /*21. Merge Two Sorted Lists*/
 
     /**
@@ -1069,6 +1075,66 @@ class Solution {
             }
         }
     return null;
+    }
+
+    /*3477. Fruits Into Baskets II*/
+    public int numOfUnplacedFruits(int[] fruits, int[] baskets) {
+        int n = fruits.length;
+        int unplaced = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if(fruits[i] <= baskets[j]){
+                    baskets[j] = 0;
+                    break;
+                }
+                if(j == n-1){
+                    unplaced++;
+                }
+
+            }
+        }
+        return unplaced;
+    }
+
+    /*231. Power of Two*/
+    public boolean isPowerOfTwo(int n) {
+        if (n == 1){
+            return true;
+        }else if(n <= 0){
+            return false;
+        }
+        while (n % 2 == 0 || n != 0){
+            n /= 2;
+        }
+        if(n == 0){
+            return true;
+        }
+        return false;
+    }
+
+    /*3136. Valid Word*/
+    public boolean isValid(String word) {
+        if (word.length() < 3 || word.matches(".*[@#$].*")){
+            return false;
+        }
+        return word.matches("[AaEeIiOoUu0-9]*") || word.matches("[^AaEeIiOoUu]*") ? false : true;
+    }
+
+    /*1859. Sorting the Sentence*/
+    public String sortSentence(String s) {
+        String[] words = s.split(" ");
+        s = "";
+        HashMap<Integer,String> hM = new HashMap<>();
+        int j = words.length;
+        for (int i = 0; i < j; i++) {
+            int l = words[i].length();
+            hM.put(words[i].charAt(words[i].length()-1)-48,words[i].substring(0,l-1));
+        }
+        for (int i = 1; i <= j; i++) {
+            s += hM.get(i);
+            s = i == j ? s : s + " ";
+        }
+        return s;
     }
 
 }

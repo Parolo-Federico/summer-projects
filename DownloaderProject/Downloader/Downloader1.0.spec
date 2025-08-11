@@ -4,7 +4,7 @@
 a = Analysis(
     ['Downloader1.0.py'],
     pathex=[],
-    binaries=[],
+    binaries=[('ffmpeg/ffmpeg.exe', 'ffmpeg'), ('ffmpeg/ffprobe.exe', 'ffmpeg')],
     datas=[('license', 'license'), ('assets', 'assets')],
     hiddenimports=[],
     hookspath=[],
@@ -21,7 +21,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='App_v1.2',
+    name='Downloader1.0',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -40,5 +40,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='App_v1.2',
+    name='Downloader1.0',
 )
