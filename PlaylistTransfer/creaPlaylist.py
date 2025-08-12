@@ -5,6 +5,7 @@ import googleapiclient.errors
 
 # Scopes richiesti: serve per creare playlist e aggiungere video
 scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
+file = "playlist.txt"
 
 def authenticate_youtube():
     """
@@ -82,16 +83,16 @@ def main():
     youtube = authenticate_youtube()
 
     # Inserisci qui il titolo della playlist
-    playlist_title = "Playlist 1"
-    playlist_description = "Creata automaticamente con uno script Python"
+    playlist_title = "Prova"
+    playlist_description = "descrizione figa"
     playlist_id = create_playlist(youtube, playlist_title, playlist_description)
 
     # Leggi il file di canzoni
     if not os.path.exists("canzoni.txt"):
-        print("Il file canzoni.txt non esiste. Creane uno con una canzone per riga.")
+        print('Il file non esiste')
         return
 
-    with open("canzoni.txt", "r") as f:
+    with open(file, "r") as f:
         songs = [line.strip() for line in f.readlines() if line.strip()]
 
     # Cerca e aggiungi ogni canzone

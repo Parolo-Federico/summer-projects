@@ -1137,4 +1137,26 @@ class Solution {
         return s;
     }
 
+    /*118. Pascal's Triangle*/
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> l = new ArrayList<>();
+        List<Integer> r = new ArrayList<>();
+        r.add(1);
+        l.add(r);
+        if (numRows == 1){
+            return l;
+        }
+        for (int i = 1; i < numRows; i++) {
+            List<Integer> row = new ArrayList<>();
+            row.add(1);
+            for (int j = 0; j+1 < i ; j++) {
+                row.add(l.get(i-1).get(j)+l.get(i-1).get(j+1));
+            }
+            row.add(1);
+            l.add(row);
+        }
+
+        return l;
+    }
+
 }
