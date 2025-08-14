@@ -1159,4 +1159,129 @@ class Solution {
         return l;
     }
 
+    /*326. Power of Three*/
+    public boolean isPowerOfThree(int n) {
+        if (n <= 0){
+            return false;
+        }
+        while ( n % 3 == 0 || n != 0) {
+            n /= 3;
+        }
+        if (n == 0){
+            return true;
+        }
+        return false;
+    }
+
+    /*2. Add Two Numbers*/
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        boolean carry = false;
+        if (l1.val == 0){
+            return l2;
+        }else if (l2.val == 0){
+            return l1;
+        }
+        ListNode result = l1;
+        ListNode prev= l1;
+        while (l1 != null && l2 != null) {
+            prev = l1.next == null ? l1 : null;
+            l1.val += carry ? l2.val + 1 : l2.val;
+            if (l1.val > 9){
+                l1.val -= 10;
+                carry = true;
+
+            }else {
+                carry = false;
+            }
+            l1 = l1.next;
+            l2 = l2.next;
+        }
+        if (l1 != null){
+            while (carry) {
+                l1.val += 1;
+                if (l1.val > 9){
+                    l1.val -= 10;
+                }else {
+                    carry = false;
+                }
+                if (l1.next == null && carry){
+                    l1.next = new ListNode(1);
+                    return result;
+                }
+                l1 = l1.next;
+            }
+        }
+        if (l2 != null){
+            while (l2 != null){
+                prev.next = carry ? new ListNode(l2.val+1) : new ListNode(l2.val);
+                prev = prev.next;
+                if (prev.val > 9){
+                    prev.val -= 10;
+                    carry = true;
+                }else {
+                    carry = false;
+                }
+                l2 = l2.next;
+            }
+
+        }
+        prev.next = carry ? new ListNode(1) : null;
+
+        return result;
+    }
+
+    /*2264. Largest 3-Same-Digit Number in String*/
+    public String largestGoodInteger(String num) {
+        int largest = -1;
+        for (int i = 0; i < num.length() - 2; i++) {
+            String s = num.substring(i,i+3);
+            int n = s.charAt(0) - 48;
+            if(s.equals(""+n+n+n)){
+                if(n > largest){
+                    largest = n;
+                }
+            }
+        }
+        return largest == -1 ? "" : ""+largest+largest+largest;
+    }
+
+    /*1903. Largest Odd Number in String*/
+    public String largestOddNumber(String num) {
+        for (int i = num.length()-1; i >= 0; i--) {
+            if (num.charAt(i) % 2 != 0){
+                return num.substring(0,i+1);
+            }
+        }
+        return "";
+    }
+
+    /*2591. Distribute Money to Maximum Children*/
+    public int distMoney(int money, int children) {
+        int count = 0;
+        if (money < children){ // se ho meno soldi rispetto al numero dei bambini + 7 (tutti con almeno 1 e uno che ha 8)
+            return -1;
+        }
+        money -= children; //uno a tutti
+        while (children-- > 0 && money > 0){
+            money -= 7;
+            if(money == 3 && children < 2 || money < 0){
+                return count;
+            }else{
+                count++;
+            }
+        }
+        return money == 0 ? count : count-1;
+    }
+
+    /*1103. Distribute Candies to People*/
+    public int[] distributeCandies(int candies, int num_people) {
+        int i = 0;
+        int[] dist = new int[num_people];
+        while (candies > 0){
+            dist[i % (num_people)] += candies - (i+1) >= 0 ? ++i : candies;
+            candies -= i;
+        }
+        return dist;
+    }
+
 }
