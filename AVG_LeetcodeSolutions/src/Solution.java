@@ -1284,4 +1284,49 @@ class Solution {
         return dist;
     }
 
+    /*1323. Maximum 69 Number*/
+    public int maximum69Number (int num) {
+        String s = "" + num;
+        int j = s.length();
+        for(int i = 0; i < j; i++){
+            if (s.charAt(i) == '6'){
+                s = s.substring(0,i) + 9 + s.substring(i+1);
+                break;
+            }
+        }
+        return Integer.valueOf(s);
+    }
+
+    /*258. Add Digits*/
+    public int addDigits(int num) {
+        String s = "" + num;
+        while (s.length() != 1) {
+            num = 0;
+            int len = s.length();
+            for (int i = 0; i < len; i++) {
+                num += s.charAt(i) - 48;
+            }
+            s = "" + num;
+        }
+        return Integer.valueOf(s);
+    }
+
+    /*1945. Sum of Digits of String After Convert*/
+    public int getLucky(String s, int k) {
+        int n = 0;
+        String str = "";
+        for (int i = 0; i < s.length(); i++) {
+            str += s.charAt(i) - 96;
+        }
+        for (int i = 0; i < k; i++) {
+            n = 0;
+            for (int j = 0; j < str.length(); j++) {
+                n += str.charAt(j) - 48;
+            }
+            str = "" + n;
+        }
+        return n;
+    }
+
+
 }
