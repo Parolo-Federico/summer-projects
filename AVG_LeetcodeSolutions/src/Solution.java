@@ -1328,5 +1328,44 @@ class Solution {
         return n;
     }
 
+    /*2348. Number of Zero-Filled Subarrays*/
+    public long zeroFilledSubarray(int[] nums) {
+        long sub = 0;
+        long run;
+        int i = 0;
+        while (i < nums.length) {
+            if (nums[i] == 0){
+                run = 1;
+                i++;
+                while (i < nums.length && nums[i] == 0){
+                    i++;
+                    run++;
+                }
+                sub += run * (run+1) / 2;
+            }
+            i++;
+        }
+        return sub;
+    }
+
+    /*392. Is Subsequence*/
+    public boolean isSubsequence(String s, String t) {
+        int indexS = 0;
+        int indexT = 0;
+        while (indexS < s.length() && indexT < t.length()) {
+            char c = s.charAt(indexS);
+            while (t.charAt(indexT) != c) {
+                indexT++;
+                if (indexT >= t.length()) {
+                    return false;
+                }
+            }
+            indexS++;
+        }
+        return true;
+    }
+
+
+
 
 }
