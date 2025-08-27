@@ -1,10 +1,8 @@
 import java.math.BigInteger;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.Map;
 
 class Solution {
     public static void print(String[] o){
@@ -352,10 +350,6 @@ class Solution {
         }
     }
 
-    /**/
-    public boolean isPalindrome(String s) {
-        return true;
-    }
 
     /*2138. Divide a String Into Groups of Size k*/
     public String[] divideString(String s, int k, char fill) {
@@ -706,19 +700,22 @@ class Solution {
         return neg ? -q : q;
     }
     /*62. Unique Paths*/
-    public int uniquePaths(int m, int n) {
-        //(m+n-2)!/((n-1)!(m-1))!
-        if(m == 1 || n == 1){
-            return 1;
-        }
-        return (fact(m+n-2).divide(fact(n-1).multiply(fact(m-1)))).intValue();
+    public int uniquePaths(int m, int n, HashMap<String, Integer> hashMap) {
+        String key = m + "," + n;
+        if (hashMap.containsKey(key)) return hashMap.get(key);
+        if (m == 0 || n == 0) return 0;
+        if (m == 1 || n == 1) return 1;
+
+        int paths = uniquePaths(m-1,n,hashMap) + uniquePaths(m,n-1,hashMap);
+        hashMap.put(key,paths);
+        return paths;
     }
-    public BigInteger fact(int n){
-        if(n == 0 || n == 1){
-            return new BigInteger("" + n);
-        }
-        return new BigInteger("" + n).multiply(fact(n-1));
+
+    public int uniquePaths(int m,int n){
+        return uniquePaths(m,n,new HashMap<>());
     }
+
+
     /*70. Climbing Stairs*/
     /*
     possibilità: 1 or 2
@@ -730,11 +727,11 @@ class Solution {
     public int climbStairs(int n) {
         return nThFib(n+1);
     }
-    public int fib(int n, HashMap<Integer,Integer> map){
+    public int fibonacci(int n, HashMap<Integer,Integer> map){
         if(map.get(n) != null){
             return map.get(n);
         }
-        int f = fib(n-1,map) + fib(n-2,map);
+        int f = fibonacci(n-1,map) + fibonacci(n-2,map);
         map.put(n,f);
         return f;
     }
@@ -745,7 +742,7 @@ class Solution {
         HashMap<Integer,Integer> m = new HashMap<>();
         m.put(0,0);
         m.put(1,1);
-        return fib(n,m);
+        return fibonacci(n,m);
     }
     /*89. Gray Code*/
     public List<Integer> grayCode(int n) {
@@ -1365,7 +1362,350 @@ class Solution {
         return true;
     }
 
+    /*1277. Count Square Submatrices with All Ones*/ // TODO fix and understand
+    public int countSquares(int[][] A) {
+        if (A == null || A.length == 0 || A[0].length == 0) {
+            return 0;
+        }
+
+        int m = A.length;
+        int n = A[0].length;
+        int res = 0;
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (A[i][j] == 1 && i > 0 && j > 0) {
+                    A[i][j] = Math.min(
+                            A[i - 1][j - 1],
+                            Math.min(A[i - 1][j], A[i][j - 1])
+                    ) + 1;
+                }
+                res += A[i][j];
+            }
+        }
+
+        return res;
+    }
+
+    /*3072. Distribute Elements Into Two Arrays II*/
+    public int[] resultArray(int[] nums) {
+        ArrayList<Integer> arr1 = new ArrayList<>();
+        ArrayList<Integer> arr2 = new ArrayList<>();
+        arr1.add(nums[0]);
+        arr2.add(nums[1]);
+        for (int i = 2; i < nums.length; i++) {
+            int count1 = greaterCount(arr1, nums[i]);
+            int count2 = greaterCount(arr2, nums[i]);
+            if (count1 > count2) {
+                arr1.add(nums[i]);
+            }else if (count1 < count2){
+                arr2.add(nums[i]);
+            }else {
+                if (arr1.size() <= arr2.size()) {
+                    arr1.add(nums[i]);
+                }else{
+                    arr2.add(nums[i]);
+                }
+            }
+        }
+        int len1 = arr1.size();
+        int len2 = arr2.size();
+        int[] res = new int[len1+len2];
+
+        for (int i = 0; i < len1; i++) {
+            res[i] = arr1.get(i);
+        }
+        for (int i = 0; i < len2; i++) {
+            res[i+len1] = arr2.get(i);
+        }
+        System.out.println(arr1);
+        System.out.println(arr2);
+        return res;
+    }
+
+    public int greaterCount(ArrayList arr, int val){
+        int c = 0;
+        int l = arr.size();
+        for (int i = 0; i < l; i++) {
+            if((int) arr.get(i) > val){
+                c++;
+            }
+        }
+        return c;
+    }
+
+    /*1920. Build Array from Permutation*/
+
+    /* [1, 2, 3, 4, 5, 6]
+    */
+    public int[] buildArray(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            int n = nums[nums[i]];
+
+        }
+        return nums;
+    }
+
+    /*3195. Find the Minimum Area to Cover All Ones I*/
+    public int minimumArea(int[][] grid) {
+        if (grid == null || grid.length == 0 || grid[0] == null || grid[0].length == 0){
+            return 0;
+        }
+        int rows = grid.length;
+        int cols = grid[0].length;
+        if (rows == 1 && cols == 1){
+            return 1;
+        }
+        int[] max = null; // max[0] = max row; max[1] = max col
+        int[] min = null; // min[0] = min row; max[1] = min col
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (grid[i][j] == 1){
+                    if (min == null && max == null){
+                        min = new int[2];
+                        min[0] = i;
+                        min[1] = j;
+                        max = new int[2];
+                        max[0] = i;
+                        max[1] = j;
+                    }else{
+                        if (max[0] < i) max[0] = i;
+                        if (max[1] < j) max[1] = j;
+                        if (min[0] > i) min[0] = i;
+                        if (min[1] > j) min[1] = j;
+                    }
+                }
+            }
+        }
+        return (max[0] - min[0] + 1) * (max[1] - min[1] + 1);
+    }
+
+    /*509. Fibonacci Number*/
+    public int fib(int n, HashMap<Integer,Integer> hashMap) {
+        if (hashMap.containsKey(n)) return hashMap.get(n);
+        if (n <= 1) return n;
+        int nthFib = fib(n-1,hashMap) + fib(n-2,hashMap);
+        hashMap.put(n,nthFib);
+        return nthFib;
+    }
+
+    /*5. Longest Palindromic Substring*/
+    public String longestPalindrome(String s) {
+        return longestPalindrome(s,new HashSet<>());
+    }
+    public String longestPalindrome(String s,  HashSet<String> list) {
+        if (list.contains(s)) return s;
+        if (s.length() == 1 || isPalindrome(s)){
+            return s;
+        }
+
+        String longLeft = longestPalindrome(s.substring(0,s.length()-1),list);
+        list.add(longLeft);
+        String longRight = longestPalindrome(s.substring(1),list);
+        list.add(longRight);
+
+        return longLeft.length() > longRight.length() ? longLeft : longRight;
+    }
 
 
+    public boolean isPalindrome(String s) {
+        if (s.length() == 1) return true;
+        int l = s.length();
+        for (int i = 0; i < l/2; i++) {
+            if (s.charAt(i) != s.charAt(l - i - 1)) return false;
+        }
+        return true;
+    }
 
+    /*1137. N-th Tribonacci Number*/
+    public int tribonacci(int n){
+        return tribonacci(n,new HashMap<>());
+    }
+
+    public int tribonacci(int n, HashMap<Integer,Integer> hashMap) {
+        if (hashMap.containsKey(n)) return hashMap.get(n);
+        if (n <= 0) return 0;
+        if (n <= 2) return 1;
+        int trib = tribonacci(n-1,hashMap) + tribonacci(n-2,hashMap) + tribonacci(n-3,hashMap);
+        hashMap.put(n,trib);
+        return trib;
+    }
+
+    /*1668. Maximum Repeating Substring*/
+    public int maxRepeating(String sequence, String word) {
+
+        int start = contains(sequence,word);
+        if (start == -1) return 0;
+        int count = 1;
+        int wLength = word.length();
+        int sLength = sequence.length();
+        start += wLength - 1;
+        while ( start + wLength < sLength && word.equals(sequence.substring(start,start + wLength))){
+            start+= wLength - 1;
+            count++;
+        }
+        return count;
+    }
+    public int contains(String s, String key){
+        int l = key.length();
+        int sL = s.length();
+        int i = 0;
+        while (i + l < sL){
+            if (key.equals(s.substring(i,i+l))) return i;
+            i++;
+        }
+
+        return -1;
+    }
+
+    /*1493. Longest Subarray of 1's After Deleting One Element*/
+    public int longestSubarray(int[] nums) {
+        if (nums.length == 1) return 0;
+        int max = 0;
+        int start = 0;
+        while (start < nums.length && nums[start] == 0) start++;
+
+        while (start < nums.length){
+            int firstZero = 0;
+            int i = start;
+            while (i < nums.length && nums[i] != 0) i++;
+            if (start == 0 && i == nums.length) return i-1;
+            firstZero = i++;
+            while (i < nums.length && nums[i] != 0) i++;
+            if (i-start-1 > max) max = i-start-1;
+            start = ++firstZero;
+        }
+        return max;
+    }
+    public int longestSubarrayTLE(int[] nums) {
+        if (nums.length == 1) return 0;
+        int range = nums.length;
+        while (range != 0) {
+            int i = 0;
+            while (i + range <= nums.length) {
+                int numZeros = zeroCount(nums,i,i+range);
+                if (numZeros <= 1) return range - 1;
+                i++;
+            }
+            range--;
+        }
+        return 0;
+    }
+
+    public int zeroCount(int[]nums,int start, int end){
+        int c = 0;
+        for (int i = start; i < end; i++) {
+            if (nums[i] == 0) c++;
+        }
+        return c;
+    }
+
+    /*498. Diagonal Traverse*/
+    /* [[1,2,3],
+        [4,5,6],
+        [7,8,9]]
+    */
+    public int[] findDiagonalOrder(int[][] mat) {
+        int m = mat.length;
+        int n = mat[0].length;
+        int[] arr = new int[n*m];
+        int currentRow = 0;
+        int currentCol = 0;
+        String way = "up";
+        for (int i = 0; i < n*m; i++) {
+            arr[i] = mat[currentRow][currentCol];
+            if ((currentRow == 0 || currentCol == n-1) && way.equals("up")) {
+                if (currentCol == n-1) {
+                    currentRow++;
+                }else if (currentCol != n-1){
+                    currentCol++;
+                }
+                way = "down";
+            }else if ((currentCol == 0 || currentRow == m-1) && way.equals("down")) {
+                if (currentRow == m-1) {
+                    currentCol++;
+                }else {
+                    currentRow++;
+                }
+                way = "up";
+            }else {
+                if (way.equals("up")) {
+                    currentRow--;
+                    currentCol++;
+                }else if (way.equals("down")) {
+                    currentCol--;
+                    currentRow++;
+                }
+            }
+
+        }
+        return arr;
+    }
+
+    /*3000. Maximum Area of Longest Diagonal Rectangle*/
+    public int areaOfMaxDiagonal(int[][] dimensions) {
+        double maxDiagonal = 0;
+        int maxArea = 0;
+        for (int i = 0; i < dimensions.length; i++) {
+            int l = dimensions[i][0];
+            int w = dimensions[i][1];
+            double diagonal = Math.sqrt(l*l + w*w);
+            if (maxDiagonal < diagonal) {
+                maxDiagonal = diagonal;
+                maxArea = l*w;
+            }else if (maxDiagonal == diagonal) {
+                if (maxArea < l*w) maxArea = l*w;
+            }
+        }
+        return maxArea;
+    }
+
+    /*3459. Length of Longest V-Shaped Diagonal Segment*/
+    public int[][] dirs = {{1,1},{1,-1},{-1,-1},{-1,1}};
+    public int lenOfVDiagonal(int[][] grid) {
+        int maxLength = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 1) {
+                    if (maxLength == 0) maxLength = 1;
+                    for (int k = 0; k < 4; k++) {
+                        int nextRow = i + dirs[k][0];
+                        int nextCol = j + dirs[k][1];
+                        if (nextRow >= 0 && nextRow < grid.length &&
+                            nextCol >= 0 && nextCol < grid[0].length &&
+                            grid[nextRow][nextCol] == 2 ) {
+                            int segment = 2 + searchValidSegment(grid,nextRow,nextCol,k,false);
+                            if (maxLength < segment) maxLength = segment;
+                        }
+                    }
+                }
+            }
+        }
+        return maxLength;
+    }
+
+    public int searchValidSegment(int[][] grid, int row,int col,int k,boolean hasTurn) {
+        int noTurn;
+        int turn;
+        int nextRow = row + dirs[k][0];
+        int nextCol = col + dirs[k][1];
+        if (nextRow < 0 || nextCol < 0 || nextRow >= grid.length || nextCol >= grid[0].length ||
+            grid[nextRow][nextCol] == 1 || grid[row][col] == grid[nextRow][nextCol]) {
+            noTurn = 0;
+        }else {
+            noTurn = 1 + searchValidSegment(grid,nextRow,nextCol,k,hasTurn);
+        }
+        k = (k+1) % 4;
+        int turnRow = row + dirs[k][0];
+        int turnCol = col + dirs[k][1];
+        if (hasTurn || turnRow < 0 || turnCol < 0 || turnRow >= grid.length || turnCol >= grid[0].length ||
+            grid[turnRow][turnCol] == 1 || grid[row][col] == grid[turnRow][turnCol]) {
+            turn = 0;
+        }else {
+            turn =  1 + searchValidSegment(grid,turnRow,turnCol,k,true);
+        }
+
+        int mostLongOption = Math.max(noTurn,turn);
+        return mostLongOption;
+    }
 }
