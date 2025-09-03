@@ -6,22 +6,23 @@ public class Main {
 //        Scanner scanner = new Scanner(System.in);
 //        System.out.print(">");
 //        String str = scanner.next();
-//        System.out.println(formatArrayString(str));
+//        System.out.println(strToArray(str));
         Solution s = new Solution();
-        int[][] grid = {{2,0,2,0,2,0},
-                        {0,1,2,2,2,0},
-                        {2,0,1,0,2,0},
-                        {2,0,0,0,1,0},
-                        {0,0,2,0,2,0},
-                        {2,0,2,0,2,0},
-                        {2,0,2,0,2,0},
-                        {2,0,0,0,2,0}};
-        System.out.println(s.lenOfVDiagonal(grid));
-
+        System.out.println(s.reverse(-2147483412));
+        Integer.parseInt("-2147483648");
+        Integer.parseInt("2147483647");
     }
 
 
 
+    public static void print(int[][] grid) {
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                System.out.print(grid[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
 
 
     public static void print(int[] o){
@@ -41,7 +42,7 @@ public class Main {
         return count;
     }
 
-    public static String formatArrayString(String badArray) {
+    public static String strToArray(String badArray) {
         String goodArray = "";
         for (int i = 0; i < badArray.length(); i++) {
             switch (badArray.charAt(i)) {
@@ -56,6 +57,26 @@ public class Main {
             }
         }
         return goodArray;
+    }
+
+    public static String strToCharArray(String bad){
+        String good = "";
+        for (int i = 0; i < bad.length(); i++) {
+            switch (bad.charAt(i)) {
+                case '[' :
+                    good += '{';
+                    break;
+                case ']' :
+                    good += '}';
+                    break;
+                case '\"' :
+                    good += '\'';
+                    break;
+                default:
+                    good += bad.charAt(i);
+            }
+        }
+        return good;
     }
 
 }

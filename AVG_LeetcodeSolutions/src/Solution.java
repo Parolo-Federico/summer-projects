@@ -1,4 +1,5 @@
-import java.math.BigInteger;
+import com.sun.source.tree.Tree;
+
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -1708,4 +1709,273 @@ class Solution {
         int mostLongOption = Math.max(noTurn,turn);
         return mostLongOption;
     }
+
+    /*3446. Sort Matrix by Diagonals*/
+    /*
+    bottom-left = decreasing
+    top-right = increasing
+    */
+    public int[][] sortMatrix(int[][] grid) {
+        sortDiagonalDecreasing(grid,0);
+        for (int i = 1; i < grid.length - 1; i++) {
+            System.out.println("i:" + i);
+            sortDiagonalDecreasing(grid,i);
+            sortDiagonalIncreasing(grid,i);
+        }
+        return grid;
+    }
+
+    public void sortDiagonalIncreasing(int[][] grid, int startCol) {
+        System.out.println("startCol: " + startCol);
+        for (int i = 0; i < grid.length; i++) {
+            boolean swap = true;
+            int row = 0;
+            for (int j = startCol; j < grid.length - 1; j++) {
+                if (grid[row][j] > grid[row + 1][j + 1]) {
+                    int t = grid[row][j];
+                    grid[row][j] = grid[row + 1][j + 1];
+                    grid[row + 1][j + 1] = t;
+                    swap = false;
+                }
+                row++;
+            }
+            if (swap) return;
+        }
+    }
+
+    public void sortDiagonalDecreasing(int[][] grid, int startRow) {
+        System.out.println("srartRow: " + startRow);
+        for (int i = 0; i < grid.length; i++) {
+            boolean swap = true;
+            int col = 0;
+            for (int j = startRow; j < grid.length - 1; j++) {
+                if (grid[j][col] < grid[j + 1][col + 1]) {
+                    int t = grid[j][col];
+                    grid[j][col] = grid[j + 1][col + 1];
+                    grid[j + 1][col + 1] = t;
+                    swap = false;
+                }
+                col++;
+            }
+            if (swap) return;
+        }
+
+    }
+
+    public void bubbleSort(int[] a) {
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a.length - 1; j++) {
+                if (a[j] > a[j+1]) {
+                    int t = a[j];
+                    a[j] = a[j+1];
+                    a[j+1] = t;
+                }
+            }
+        }
+    }
+
+    /*3021. Alice and Bob Playing Flower Game*/
+    public long flowerGameBad(int n, int m) {
+        long out = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if ((j + i) % 2 != 0) {
+                    out++;
+                    //System.out.println(out + ": " + i + ", " + j);
+                }
+            }
+        }
+        return out;
+    }
+
+    public long flowerGame(int n,int m) {
+        return 2L * n/2 * m/2;
+    }
+
+    /*36. Valid Sudoku*/
+    public boolean isValidSudoku(char[][] board) {
+        HashSet<Character> rowSet;
+        HashSet<Character> colSet;
+        ArrayList<HashSet<Character>> arr = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            arr.add(i,new HashSet<>());
+        }
+        for (int i = 0; i < board.length; i++) {
+            rowSet = new HashSet<>();
+            colSet = new HashSet<>();
+            for (int j = 0; j < board[0].length; j++) {
+                double subBoxIndex = Math.floor(i / 3) * 3 + Math.floor(j / 3);
+                System.out.println("box: " + subBoxIndex);
+                System.out.println("char row: " + board[i][j]);
+                System.out.println("char col: " + board[j][i]);
+                System.out.println();
+                if (board[i][j] != '.' &&
+                    (rowSet.contains(board[i][j]) ||
+                     arr.get((int) subBoxIndex).contains(board[i][j])) || colSet.contains(board[j][i])) {
+                    System.out.println(arr);
+                    System.out.println(rowSet);
+                    System.out.println(colSet);
+                    return false;
+                }
+                if (board[i][j] != '.') {
+                    rowSet.add(board[i][j]);
+                    arr.get((int) subBoxIndex).add(board[i][j]);
+                }
+                if (board[j][i] != '.') colSet.add(board[j][i]);
+
+            }
+        }
+        return true;
+    }
+
+
+    /*1792. Maximum Average Pass Ratio*/
+    public double maxAverageRatio(int[][] classes, int extraStudents) {
+        double maxRatio = 0;
+        PriorityQueue<double[]> priorityQueue = new PriorityQueue<>(new Comparator<double[]>() {
+            @Override
+            public int compare(double[] o1, double[] o2) {
+                double ret = o1[0] - o2[0];
+                if (ret == 0) return 0;
+                return ret > 0 ? 1 : -1;
+            }
+        });
+        for (int i = 0; i < classes.length; i++) {
+            priorityQueue.add(new double[]{(classes[i][0] + 1.0) / (classes[i][1] + 1) - (double) classes[i][0] / classes[i][1], i});
+        }
+        System.out.println(priorityQueue.toString());
+        while (extraStudents > 0) {
+            extraStudents--;
+            double[] bestCase = priorityQueue.poll();
+            classes[(int) bestCase[1]][0] += 1;
+            classes[(int) bestCase[1]][1] += 1;
+            bestCase[0] = (classes[(int) bestCase[1]][0] + 1.0) / (classes[(int) bestCase[1]][0] + 1) - (double) classes[(int) bestCase[1]][0] / classes[(int) bestCase[1]][1];
+            priorityQueue.add(bestCase);
+        }
+        for (int i = 0; i < classes.length; i++) {
+            maxRatio += (double) classes[i][0] / classes[i][1];
+            //System.out.println("0: " + classes[i][0] + ",  1: " + classes[i][1]);
+        }
+
+        return maxRatio / classes.length;
+    }
+
+    /*3025. Find the Number of Ways to Place People I*/
+    public int numberOfPairs(int[][] points) {
+        int pairs = 0;
+        for (int i = 0; i < points.length; i++) {
+            int x = points[i][0];
+            int y = points[i][1];
+            for (int j = 0; j < points.length; j++) {
+                int x2 = points[j][0];
+                int y2 = points[j][1];
+                if (x <= x2 && y >= y2 && i != j) {
+                    boolean pair = true;
+                    for (int k = 0; k < points.length; k++) {
+                        if (k != i && k != j &&
+                                (points[k][0] >= x && points[k][0] <= x2) &&
+                                (points[k][1] <= y && points[k][1] >= y2) ) {
+                            pair = false;
+                        }
+                    }
+                    if (pair) pairs++;
+                }
+            }
+        }
+        return pairs;
+    }
+
+    /*Q1. Restore Finishing Order*/
+    public int[] recoverOrder(int[] order, int[] friends) {
+        int[] friendsOrder = new int[friends.length];
+        int frIndex = 0;
+        for (int i = 0; i < order.length; i++) {
+            for (int j = 0; j < friends.length; j++) {
+                if (order[i] == friends[j]) {
+                    friendsOrder[frIndex] = friends[j];
+                    frIndex++;
+                }
+            }
+        }
+        return friendsOrder;
+    }
+
+    /*7. Reverse Integer*/
+    public int reverse(int x) {
+        String s = "" + x;
+        String rev = "";
+        boolean neg = s.charAt(0) == '-';
+        for (int i = s.length() - 1; i > 0 ; i--) {
+            rev += s.charAt(i);
+        }
+        if (!neg) rev+= s.charAt(0);
+        if (rev.length() == 10 && !inbound(rev,neg)) return 0;
+
+
+        return neg ? -Integer.parseInt(rev) : Integer.parseInt(rev);
+    }
+
+    public boolean inbound (String s, boolean neg){
+        String max = neg ? "2147483648" : "2147483647";
+        boolean certain= false;
+        int i = 0;
+        while(!certain) {
+            if (s.charAt(i) < max.charAt(i)) return true;
+            else if (s.charAt(i) > max.charAt(i)) return false;
+            else if (s.charAt(i) == max.charAt(i));
+        }
+        return false;
+    }
+
+    /*104. Maximum Depth of Binary Tree*/
+    public int maxDepth(TreeNode root) {
+        return furtherSearch(root);
+    }
+
+    public int furtherSearch(TreeNode node) {
+        if (node == null) return 0;
+        TreeNode left = node.left;
+        TreeNode right = node.right;
+        return 1 + Math.max(furtherSearch(left),furtherSearch(right));
+    }
+
+    /*100. Same Tree*/
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        return compare(p,q);
+    }
+
+    public boolean compare(TreeNode n1,TreeNode n2) {
+        if (n1 == null && n2 == null) return true;
+        if (n1 == null || n2 == null || n1.val != n2.val) return false;
+        return compare(n1.left,n2.left) && compare(n1.right,n2.right);
+
+    }
+
+    /*101. Symmetric Tree*/
+    public boolean isSymmetric(TreeNode root) {
+        return compareMirrored(root.left,root.right);
+    }
+
+    public boolean compareMirrored(TreeNode n1,TreeNode n2) {
+        if (n1 == null && n2 == null) return true;
+        if (n1 == null || n2 == null || n1.val != n2.val) return false;
+        return compareMirrored(n1.left,n2.right) && compareMirrored(n1.right,n2.left);
+
+    }
+
+    /*111. Minimum Depth of Binary Tree*/
+    public int minDepth(TreeNode root) {
+        if (root == null) return 0;
+        return searchMinDepth(root);
+    }
+
+    public int searchMinDepth(TreeNode node) {
+        if (node == null) return 0;
+        if (node.left == null && node.right == null) return 1;
+        int leftDepth = node.left == null ? 0 : searchMinDepth(node.left);
+        int rightDepth = node.right == null ? 0 : searchMinDepth(node.right);
+        return Math.min(leftDepth,rightDepth);
+    }
+
+
 }
