@@ -1,4 +1,6 @@
+import javax.swing.*;
 import java.util.Arrays;
+import java.util.PriorityQueue;
 import java.util.Scanner;
 
 public class Main {
@@ -8,9 +10,10 @@ public class Main {
 //        String str = scanner.next();
 //        System.out.println(strToArray(str));
         Solution s = new Solution();
-        System.out.println(s.reverse(-2147483412));
-        Integer.parseInt("-2147483648");
-        Integer.parseInt("2147483647");
+        int[] nums = new int[]{8303,361,8303,361,437,361,8303,8303,8303,6859,19,19,361,70121,70121,70121,70121,70121,70121,70121,70121,70121,70121,70121,70121,70121,70121,70121,70121,1271,31,961,31,7,2009,7,2009,2009,49,7,7,8897,1519,31,1519,217};
+        System.out.println(s.gcd(70121,70121));
+        System.out.println(s.replaceNonCoprimes(nums));
+
     }
 
 
@@ -77,6 +80,17 @@ public class Main {
             }
         }
         return good;
+    }
+
+    public static ListNode createListOfNodes(int[] vals) {
+        ListNode node = new ListNode(vals[0]); // first val inside constructor call
+        ListNode iterator = node;
+        for (int i = 1; i < vals.length; i++) {
+            iterator.next = new ListNode();
+            iterator = iterator.next;
+            iterator.val = vals[i];
+        }
+        return node;
     }
 
 }

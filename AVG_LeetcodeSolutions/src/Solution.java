@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 class Solution {
     public static void print(String[] o){
@@ -338,7 +339,6 @@ class Solution {
             } else {
                 nums1[k++] = nums2[j++];
             }
-
         }
         if (i >= m) {
             while (j < n) {
@@ -903,18 +903,19 @@ class Solution {
     }
     /*189. Rotate Array*/
     public void rotate(int[] nums, int k) {
-        if(k % nums.length == 0){
-            return;
+        if(k % nums.length == 0) return;
+        k = k % nums.length;
+        int[] arr = new int[nums.length];
+        int index = 0;
+        for (int i = nums.length-k; i < nums.length; i++) {
+            arr[index++] = nums[i];
+            System.out.println(nums[i]);
         }
-        k = (k % nums.length)+1;
-        int t = nums[k];
-        int l = nums.length;
-        int i = k;
-        while(i % l != 0){
-            nums[(i % l)] = nums[((i+k) % l)];
-            i+= k;
+        for (int i = 0; i < k; i++) {
+            arr[index++] = nums[i];
+            System.out.println(nums[i]);
         }
-        nums[0] = t;
+        nums = arr;
     }
     public void rotate1(int[] nums, int k) {
         if(k % nums.length == 0){
@@ -1173,59 +1174,63 @@ class Solution {
 
     /*2. Add Two Numbers*/
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-        boolean carry = false;
-        if (l1.val == 0){
+        int carry = 0;
+        if (l1.val == 0 && l1.next == null){
             return l2;
-        }else if (l2.val == 0){
+        }else if (l2.val == 0 && l2.next == null){
             return l1;
         }
-        ListNode result = l1;
-        ListNode prev= l1;
-        while (l1 != null && l2 != null) {
-            prev = l1.next == null ? l1 : null;
-            l1.val += carry ? l2.val + 1 : l2.val;
-            if (l1.val > 9){
-                l1.val -= 10;
-                carry = true;
+        ListNode result = new ListNode();
+        ListNode resIterator = result;
+       while (l1 != null && l2 != null) {
+           int n = l1.val + l2.val + carry;
+           if (n > 9) {
+               carry = 1;
+               resIterator.val = n - 10;
+           }else {
+               resIterator.val = n;
+               carry = 0;
+           }
+           l1 = l1.next;
+           l2 = l2.next;
+           if (l1 != null || l2 != null) {
+               resIterator.next = new ListNode();
+               resIterator = resIterator.next;
+           }
 
-            }else {
-                carry = false;
-            }
-            l1 = l1.next;
-            l2 = l2.next;
-        }
-        if (l1 != null){
-            while (carry) {
-                l1.val += 1;
-                if (l1.val > 9){
-                    l1.val -= 10;
-                }else {
-                    carry = false;
-                }
-                if (l1.next == null && carry){
-                    l1.next = new ListNode(1);
-                    return result;
-                }
-                l1 = l1.next;
-            }
-        }
-        if (l2 != null){
-            while (l2 != null){
-                prev.next = carry ? new ListNode(l2.val+1) : new ListNode(l2.val);
-                prev = prev.next;
-                if (prev.val > 9){
-                    prev.val -= 10;
-                    carry = true;
-                }else {
-                    carry = false;
-                }
-                l2 = l2.next;
-            }
+       }
+       while (l1 != null) {
+           if (l1.val + carry > 9) {
+               resIterator.val = l1.val + carry - 10; // + carry - 10 = -9
+           }else {
+               resIterator.val = l1.val + carry;
+               carry = 0;
+           }
+           l1 = l1.next;
+           if (l1 != null) {
+               resIterator.next = new ListNode();
+               resIterator = resIterator.next;
+           }
+       }
+       while (l2 != null) {
+           if (l2.val + carry > 9) {
+               resIterator.val = l2.val + carry - 10;
+           }else {
+               resIterator.val = l2.val + carry;
+               carry = 0;
+           }
+           l2 = l2.next;
+           if (l2 != null) {
+               resIterator.next = new ListNode();
+               resIterator = resIterator.next;
+           }
+       }
+       if (carry == 1) {
+           resIterator.next = new ListNode();
+           resIterator.next.val = 1;
+       }
 
-        }
-        prev.next = carry ? new ListNode(1) : null;
-
-        return result;
+       return result;
     }
 
     /*2264. Largest 3-Same-Digit Number in String*/
@@ -1976,6 +1981,196 @@ class Solution {
         int rightDepth = node.right == null ? 0 : searchMinDepth(node.right);
         return Math.min(leftDepth,rightDepth);
     }
+
+    /*2327. Number of People Aware of a Secret*/
+    public int peopleAwareOfSecret(int n, int delay, int forget) {
+        return 0;
+    }
+
+    /*383. Ransom Note*/
+    public boolean canConstruct(String ransomNote, String magazine) {
+        HashMap<Character,Integer> hashMap = new HashMap<>();
+        int l = magazine.length();
+        for (int i = 0; i < l; i++) {
+            char c = magazine.charAt(i);
+            if (hashMap.containsKey(c)) hashMap.put(c,hashMap.get(c)+1);
+            else hashMap.put(c,1);
+        }
+        return true;
+    }
+
+    /*4. Median of Two Sorted Arrays*/
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        int[] merged = new int[nums1.length+nums2.length];
+        int index = 0;
+        int i1 = 0;
+        int i2 = 0;
+        while (i1 < nums1.length && i2 < nums2.length) {
+            if (nums1[i1] < nums2[i2]) {
+                merged[index++] = nums1[i1++];
+            }else {
+                merged[index++] = nums2[i2++];
+            }
+        }
+        while (i1 < nums1.length) {
+            merged[index++] = nums1[i1++];
+        }
+        while (i2 < nums2.length) {
+            merged[index++] = nums2[i2++];
+        }
+        if (merged.length % 2 == 0) return (merged[merged.length/2] + merged[merged.length/2 - 1]) / 2.0;
+        else return (double) merged[merged.length/2];
+    }
+
+    /*2960. Count Tested Devices After Test Operations*/
+    public int countTestedDevices(int[] batteryPercentages) {
+        int tested = 0;
+        for (int i = 0; i < batteryPercentages.length; i++) {
+            if (batteryPercentages[i] > 0) {
+                tested++;
+                for (int j = i+1; j < batteryPercentages.length; j++) {
+                    if (batteryPercentages[j] > 0) batteryPercentages[j]--;
+                }
+            }
+        }
+        return tested;
+    }
+
+    /*3081. Replace Question Marks in String to Minimize Its Value*/
+    public String minimizeStringValue(String s) {
+        int[] freq = new int[26];
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>();
+        ArrayList<Integer> qMIndexes = new ArrayList<>();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '?') {
+                qMIndexes.add(i);
+            }else freq[c - 97]++;
+        }
+        minCost(freq,qMIndexes.size(),priorityQueue);
+        int prev = 0;
+        for (Integer i : qMIndexes) {
+            s = s.substring(prev,i) + (char) (0 + priorityQueue.poll()) + s.substring(i+1);
+            if (prev != 0) prev = i;
+        }
+        return s;
+    }
+
+    public void minCost(int[] freq,int qmCount,PriorityQueue<Integer> pQ) {
+        for (int j = 0; j < qmCount; j++) {
+            int minIndex = 0;
+            int minValue = freq[0];
+            for (int i = 1; i < freq.length; i++) {
+                if (freq[i] < minValue) {
+                    minValue = freq[i];
+                    minIndex = i;
+                }
+            }
+            freq[minIndex]++;
+            pQ.add(minIndex + 97);
+        }
+    }
+
+    /*2785. Sort Vowels in a String*/
+    public String sortVowels(String s) {
+        int[] freq = new int[10]; // a = 0; u = 4
+        String vowels = "AEIOUaeiou";
+        PriorityQueue<Character> vowelQueue= new PriorityQueue<>();
+        int l = s.length();
+        for (int i = 0; i < l; i++) {
+            char c = s.charAt(i);
+            if (vowels.contains("" + c )) vowelQueue.add(c);
+        }
+
+        StringBuilder sorted = new StringBuilder();
+        for (int i = 0; i < l; i++) {
+            char c = s.charAt(i);
+            if (vowels.contains("" + c)) sorted.append(vowelQueue.poll());
+            else sorted.append(c);
+        }
+
+        return sorted.toString();
+    }
+    /*3541. Find Most Frequent Vowel and Consonant*/
+    public int maxFreqSum(String s) {
+        int[] freq = new int[26];
+        int l = s.length();
+        for (int i = 0; i < l; i++) {
+            freq[s.charAt(i) - 97]++;
+        }
+        int maxVowel = 0;
+        int maxConsonant = 0;
+        for (int i = 0; i < 26; i++) {
+            switch (i) {
+                case 0:
+                case 4:
+                case 8:
+                case 14:
+                case 20:
+                    if (maxVowel < freq[i]) maxVowel = freq[i];
+                    break;
+                default:
+                    if (maxConsonant < freq[i]) maxConsonant = freq[i];
+
+            }
+        }
+        return maxVowel + maxConsonant;
+    }
+
+    /*1935. Maximum Number of Words You Can Type*/
+    public int canBeTypedWords(String text, String brokenLetters) {
+        if (brokenLetters.length() == 26) return 0;
+        int canType = 0;
+        int l = text.length();
+        int i = 0;
+        //boolean skip = false;
+        while (i < l) {
+            while (i < l && text.charAt(i) == ' ') i++;
+            while (i < l && text.charAt(i) != ' ') {
+                if (brokenLetters.contains("" + text.charAt(i))) {
+                    break;
+                }else i++;
+            }
+            if (i == l || text.charAt(i) == ' ') canType++;
+        }
+        return canType;
+    }
+
+
+
+    /*2197. Replace Non-Coprime Numbers in Array*/
+    public List<Integer> replaceNonCoprimes(int[] nums) {
+        List<Integer> list = new ArrayList<>(nums.length);
+        for (int i = 0; i < nums.length; i++) {
+            list.add(nums[i]);
+        }
+
+        for (int i = 0; i < list.size() - 1; i++) {
+            int gcd = gcd(list.get(i),list.get(i+1));
+            if (gcd > 1) {
+                int a = list.remove(i);
+                int b = list.remove(i);
+                if (a == gcd && b == gcd) list.add(i,a);
+                else list.add(i,(a*b) / gcd);
+                i -= 2;
+                if (i < 0) i = -1;
+            }
+        }
+        return list;
+    }
+
+    public int gcd(int a, int b) {
+        if (a == b) return a;
+        if (a == 0) return b;
+        if (b == 0) return a;
+        if (a % 2 == 0 && b % 2 == 0) return 2 * gcd(a/2,b/2);
+        if (a % 2 == 0) return gcd(a/2,b);
+        if (b % 2 == 0) return gcd(a,b/2);
+        if (a < b) return gcd(b-a,a);
+        else return gcd(a-b,b);
+    }
+
+
 
 
 }

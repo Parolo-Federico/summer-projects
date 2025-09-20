@@ -6,7 +6,7 @@ def download_audio(title, author):
     ydl_opts = {
         'format': 'bestaudio/best',
         'quiet': True,
-        'outtmpl': './downloads/%(title)s.%(ext)s',  # save with video title as filename
+        'outtmpl': './downloadBah/%(title)s.%(ext)s',  # save with video title as filename
         'postprocessors': [{  # extract audio using ffmpeg
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',  # you can change to 'm4a' or 'wav' if you want
